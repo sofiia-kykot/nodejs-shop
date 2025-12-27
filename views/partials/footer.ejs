@@ -1,0 +1,16 @@
+</main>
+<footer class="bg-white border-t border-gray-200 mt-12 py-8">
+    <div class="container mx-auto px-4 text-center">
+        <p class="text-gray-500 text-sm">
+            &copy; <%= new Date().getFullYear() %> Cosmetic Care Spot.
+            All rights reserved. | DB Laboratory Work #1
+        </p>
+    </div>
+</footer>
+
+<% if (process.env.NODE_ENV !== 'development') { %>
+    <script src="/dist/assets/main.js"></script>
+<% } %>
+
+</body>
+</html>

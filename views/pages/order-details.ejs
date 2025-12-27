@@ -1,0 +1,150 @@
+<%- include('../partials/header', { title: title }) %>
+
+<div class="container mx-auto px-4 sm:px-8 py-8">
+
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div class="flex items-center gap-4">
+            <a href="/" class="text-gray-500 hover:text-black transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                    Order #<%= order.order_id %>
+                    <span class="<%= order.status === 'New' ? 'bg-blue-100 text-blue-800' : order.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 rounded-full text-sm font-medium">
+                        <%= order.status %>
+                    </span>
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Placed on <%= new Date(order.order_date).toLocaleString('en-US', {
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                    }) %>
+                </p>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <button onclick="window.print()"
+                    class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                Print Invoice
+            </button>
+            <button id="delete-order-btn" data-id="<%= order.order_id %>"
+                    class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 transition">
+                Delete Order
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <h3 class="text-gray-900 font-semibold">Order Items</h3>
+                </div>
+                <table class="min-w-full leading-normal">
+                    <thead>
+                    <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                        <th class="px-6 py-3">Product</th>
+                        <th class="px-6 py-3 text-right">Price</th>
+                        <th class="px-6 py-3 text-center">Qty</th>
+                        <th class="px-6 py-3 text-right">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                    <% order.items.forEach(item => { %>
+                        <tr>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 shrink-0 bg-gray-100 rounded-md flex items-center justify-center text-gray-400">
+                                        <% if (item.Product && item.Product.image_url) { %>
+                                            <img src="<%= item.Product.image_url %>"
+                                                 alt="<%= item.Product.product_name %>"
+                                                 class="h-10 w-10 rounded-md object-cover border border-gray-200">
+                                        <% } else { %>
+                                            <div class="h-10 w-10 shrink-0 bg-gray-100 rounded-md flex items-center justify-center text-gray-400">
+                                                <svg class="h-6 w-6" fill="none" stroke="currentColor"
+                                                     viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            <%= item.Product ? item.Product.product_name : 'Product Removed' %>
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            SKU: <%= item.Product ? item.Product.sku : 'N/A' %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-500 text-right">
+                                $<%= item.unit_price %>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-900 text-center">
+                                <%= item.quantity %>
+                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900 text-right">
+                                $<%= (item.unit_price * item.quantity).toFixed(2) %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+                <h3 class="text-gray-900 font-semibold mb-4 border-b border-gray-100 pb-2">Customer Details</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-500 uppercase">Customer Name</label>
+                        <p class="text-sm font-medium text-gray-900"><%= order.customer_name %></p>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 uppercase">Contact Info</label>
+                        <p class="text-sm text-gray-900 flex items-center gap-2">
+                            <%= order.customer_phone %>
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 uppercase">Shipping Address</label>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            <%= order.shipping_address %>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-sm rounded-xl border border-gray-200 p-6">
+                <h3 class="text-gray-900 font-semibold mb-4 border-b border-gray-100 pb-2">Payment Summary</h3>
+
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-gray-500 text-sm">Payment Method</span>
+                    <span class="text-gray-900 text-sm font-medium"><%= order.payment_method %></span>
+                </div>
+
+                <div class="border-t border-gray-100 my-3 pt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-900 font-bold text-lg">Total</span>
+                        <span class="text-gray-900 font-bold text-lg">$<%= order.total_amount %></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>
