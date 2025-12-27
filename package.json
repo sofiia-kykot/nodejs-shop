@@ -27,6 +27,7 @@
     "autoprefixer": "^10.4.23",
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.11",
+    "sequelize-cli": "^6.6.3",
     "tailwindcss": "^4.1.18",
     "vite": "^7.3.0",
     "vite-plugin-full-reload": "^1.2.0"
