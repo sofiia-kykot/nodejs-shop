@@ -1,0 +1,177 @@
+<%- include('../partials/header', { title: title}) %>
+
+<div class="container mx-auto px-4 sm:px-8 max-w-4xl">
+    <div class="py-8">
+
+        <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800"><%= title %></h2>
+            <a href="/" class="text-gray-500 hover:text-gray-900 text-sm font-medium">
+                &larr; Cancel and Go Back
+            </a>
+        </div>
+        <form id="<%= formType === 'edit' ? "edit-order" : formType === 'create' ? "create-order" : "" %>"
+              class="space-y-6">
+            <div class="bg-white shadow-md rounded-lg p-6 border-t-4 border-black">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Customer Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" name="customer_name" required
+                               value="<%= formType === 'edit' ? order.customer_name : "" %>"
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border"
+                               placeholder="John Doe">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                        <input type="text" name="customer_phone" required
+                               value="<%= formType === 'edit' ? order.customer_phone : "" %>"
+                               class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border"
+                               placeholder="+1 234 567 890">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Shipping Address</label>
+                        <textarea name="shipping_address" rows="2" required
+                                  class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border"
+                                  placeholder="123 Main St, Springfield, USA"><%= formType === 'edit' ? order.shipping_address : "" %></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">Order Settings</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Order Status</label>
+                        <select name="status"
+                                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border bg-white">
+                            <option value="New" <%= formType === 'edit' && order.status === 'New' ? 'selected' : '' %>>
+                                New
+                            </option>
+                            <option value="Paid" <%= formType === 'edit' && order.status === 'Paid' ? 'selected' : '' %>>
+                                Paid
+                            </option>
+                            <option value="Shipped" <%= formType === 'edit' && order.status === 'Shipped' ? 'selected' : '' %>>
+                                Shipped
+                            </option>
+                            <option value="Completed" <%= formType === 'edit' && order.status === 'Completed' ? 'selected' : '' %>>
+                                Completed
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                        <select name="payment_method"
+                                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border bg-white">
+                            <option value="Cash" <%= formType === 'edit' && order.payment_method === 'Cash' ? 'selected' : '' %>>
+                                Cash
+                            </option>
+                            <option value="Card" <%= formType === 'edit' && order.payment_method === 'Card' ? 'selected' : '' %>>
+                                Card
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="text-lg font-medium text-gray-900">Order Items</h3>
+                    <button type="button" id="add-product-btn"
+                            class="text-sm text-indigo-600 hover:text-indigo-900 font-medium flex items-center gap-1">
+                        <span>+ Add Another Product</span>
+                    </button>
+                </div>
+
+
+                <div id="products-container" class="space-y-4">
+
+                    <% if(formType === "create"){ %>
+                        <div class="flex gap-4 items-end product-row">
+                            <div class="grow">
+                                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase">Select
+                                    Product</label>
+                                <select name="products[0][product_id]" required
+                                        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border bg-white">
+                                    <option value="" disabled selected>-- Choose a product --</option>
+                                    <% products.forEach(product => { %>
+                                        <option value="<%= product.product_id %>" data-price="<%= product.price %>">
+                                            <%= product.product_name %> (SKU: <%= product.sku %>) -
+                                            $<%= product.price %>
+                                        </option>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="w-24">
+                                <label class="block text-xs font-medium text-gray-500 mb-1 uppercase">Qty</label>
+                                <input type="number" name="products[0][quantity]" value="1" min="1" required
+                                       class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border text-center">
+                            </div>
+                            <div class="pb-1 w-8"></div>
+                        </div>
+
+                    <% } else if(formType === "edit"){ %>
+                        <% order.items.forEach((item, index) => { %>
+                            <div class="flex gap-4 items-end product-row border-b border-dashed border-gray-200 pb-4 last:border-0 last:pb-0">
+                                <div class="grow">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1 uppercase">Select
+                                        Product</label>
+                                    <select name="products[<%= index %>][product_id]" required
+                                            class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border bg-white">
+                                        <option value="" disabled>-- Choose a product --</option>
+                                        <% products.forEach(product => { %>
+                                            <option value="<%= product.product_id %>"
+                                                    <%= product.product_id === item.product_id ? 'selected' : '' %>>
+                                                <%= product.product_name %> (SKU: <%= product.sku %>) -
+                                                $<%= product.price %>
+                                            </option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+                                <div class="w-24">
+                                    <label class="block text-xs font-medium text-gray-500 mb-1 uppercase">Qty</label>
+                                    <input type="number" name="products[<%= index %>][quantity]"
+                                           value="<%= item.quantity %>" min="1" required
+                                           class="w-full rounded-lg border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm py-2 px-3 border text-center">
+                                </div>
+                                <div class="pb-1 w-8 flex justify-center">
+                                    <button type="button"
+                                            class="text-red-500 hover:text-red-700 font-bold text-xl remove-btn">
+                                        &times;
+                                    </button>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+
+            </div>
+
+            <div class="flex items-center justify-end gap-4 pt-4">
+                <a href="/" class="text-gray-600 hover:text-gray-900 text-sm font-medium">Cancel</a>
+                <button
+                        <%= formType === 'edit' ? `data-order-id=${order.order_id}` : "" %>
+                        id="<%= formType === 'edit' ? "edit-order-btn" : formType === 'create' ? "create-order-btn" : "" %>"
+                        class="bg-black text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-800 transition shadow-lg">
+                    <%= formType === 'edit' ? "Save Changes" : "Create Order" %>
+                </button>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const products = <%- JSON.stringify(products) %>;
+    window.addEventListener('load', () => {
+        window.helpers.initOrderForm(products);
+    })
+</script>
+
+<%- include('../partials/footer') %>
