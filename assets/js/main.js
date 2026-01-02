@@ -1,11 +1,11 @@
 import '../css/style.css';
 import axios from 'axios';
 import {initOrderForm, setupOrderForm} from "./helpers/orderForm";
+import {initSalesChart, initCategoryChart} from "./helpers/charts";
 
 window.axios = axios;
-window.helpers = {initOrderForm};
+window.helpers = {initOrderForm, initSalesChart,initCategoryChart};
 document.addEventListener('DOMContentLoaded', () => {
-
     //Delete order
     const deleteOrderBtn = document.querySelectorAll('.delete-order-btn');
     deleteOrderBtn.forEach(btn => {

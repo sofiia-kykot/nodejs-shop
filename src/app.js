@@ -1,9 +1,9 @@
 const express = require('express');
+const router = require('./routes/index');
 const path = require('path');
 require('dotenv').config();
 
 const db = require('./models/index');
-const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/', orderRoutes);
+app.use('/', router);
 
 const PORT = process.env.PORT || 3000;
 
